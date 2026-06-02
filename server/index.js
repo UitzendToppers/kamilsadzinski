@@ -135,11 +135,25 @@ app.post("/api/auth/logout", (_req, res) => {
 });
 
 app.get("/api/site", async (_req, res) => {
-  const [sections, courses] = await Promise.all([
-    prisma.siteSection.findMany(),
-    prisma.course.findMany({ where: { published: true }, orderBy: { sortOrder: "asc" }, include: { lessons: { orderBy: { sortOrder: "asc" } } } })
-  ]);
-  res.json({ sections, courses });
+  try {
+    const [sections, courses] = await Promise.all([
+      prisma.siteSection.findMany(),
+      prisma.course.findMany({ where: { published: true }, orderBy: { sortOrder: "asc" }, include: { lessons: { orderBy: { sortOrder: "asc" } } } })
+    ]);
+    res.json({ sections, courses });
+  } catch {
+    res.json({
+      sections: [
+        { key: "strona-glowna", title: "Zbuduj Wolność Finansową na Nieruchomościach", content: "Naucz się inwestować, flipować i zarabiać na rynku nieruchomości, nawet jeśli zaczynasz od zera i bez kapitału. Praktyczna wiedza od praktyka z 5-letnim stażem.", data: "{}" },
+        { key: "kontakt", title: "Kontakt", content: "Kamil Sadziński\nkontakt@kamilsadzinski.pl\nŁódź, Narutowicza 40/1 93-582 Łódź", data: "{}" }
+      ],
+      courses: [
+        { id: "demo-1", slug: "calodniowy-kurs-online", badge: "okazja", title: "Całodniowy Kurs Online", summary: "Podstawy inwestowania w nieruchomości. Strategie oceny wartości i podejmowania świadomych decyzji inwestycyjnych.", description: "Podczas kursu poznasz solidne podstawy inwestowania w nieruchomości oraz zrozumiesz, jak działa rynek w praktyce.", priceCents: 9700, currency: "PLN", duration: "Cały dzień", level: "Dla każdego", imageUrl: "https://kamilsadzinski.pl/wp-content/uploads/2026/03/pexels-photo-27759898-27759898-2048x1365.jpg", lessons: [] },
+        { id: "demo-2", slug: "konsultacja-online-11-60min", badge: "bestseller", title: "Konsultacja Online 1:1 - 60min", summary: "Ten indywidualny program coachingowy 1:1 jest stworzony dla osób, które chcą świadomie inwestować w nieruchomości lub podjąć dobrą decyzję zakupową.", description: "To praktyczna, konkretna praca 1:1, której celem są realne rezultaty - nie teoria.", priceCents: 49700, currency: "PLN", duration: "1h spotkania", level: "Dla każdego", imageUrl: "https://kamilsadzinski.pl/wp-content/uploads/2026/03/pexels-photo-3678466-3678466-2048x1521.jpg", lessons: [] },
+        { id: "demo-3", slug: "flipy-od-zera-kurs-stacjonarny", badge: "bestseller", title: "Flipy od Zera - kurs stacjonarny", summary: "Jak znajdować okazje inwestycyjne, których nie ma na portalach ogłoszeniowych. Strategie pozyskiwania nieruchomości poniżej ceny rynkowej.", description: "To nie jest kurs teoretyczny. Pokazuję dokładnie, jak wygląda flip w praktyce - od znalezienia okazji, przez analizę, aż po sprzedaż.", priceCents: 199700, currency: "PLN", duration: "3h spotkania", level: "Stacjonarne", imageUrl: "https://kamilsadzinski.pl/wp-content/uploads/2026/03/g2760fff4c137dd5bd7d0dfe57846914d3c2953d3f2c8a0e305de497358461f8f8defb1cd202527b6acb43e8599e016a317d85945196745d27b2fb0d860e72d71_1280-1845166.jpg", lessons: [] }
+      ]
+    });
+  }
 });
 
 app.get("/api/pages", async (_req, res) => {
