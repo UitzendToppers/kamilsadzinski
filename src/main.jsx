@@ -76,12 +76,30 @@ function Nawigacja({ pages = [] }) {
 }
 
 function Strona({ dane, setWidok, setWybrany }) {
-  const [dzwiek, setDzwiek] = useState(true);
+  const [dzwiek, setDzwiek] = useState(false);
+  const videoRef = useRef(null);
   const sekcje = Object.fromEntries((dane.sections || []).map((s) => [s.key, { ...s, json: JSON.parse(s.data || "{}") }]));
   const start = sekcje["strona-glowna"];
   const omnie = sekcje["o-mnie"];
   const kontakt = sekcje.kontakt;
   const kreator = sekcje["kreator-strony"];
+  const film = start?.json.media?.film;
+
+  useEffect(() => {
+    if (!videoRef.current || !film) return;
+    videoRef.current.muted = true;
+    videoRef.current.play().catch(() => {});
+  }, [film]);
+
+  function przelaczDzwiek() {
+    const video = videoRef.current;
+    if (!video) return;
+    const nastepny = !dzwiek;
+    video.muted = !nastepny;
+    setDzwiek(nastepny);
+    video.play().catch(() => {});
+  }
+
   return (
     <main>
       <section className="hero wejscie">
@@ -95,8 +113,8 @@ function Strona({ dane, setWidok, setWybrany }) {
           </div>
         </div>
         <div className="heroMedia">
-          <video poster={start?.json.media?.miniatura} src={start?.json.media?.film} autoPlay muted={!dzwiek} loop playsInline />
-          <button className="dzwiekVideo" onClick={() => setDzwiek(!dzwiek)} aria-label={dzwiek ? "Wycisz film" : "Włącz dźwięk"}>{dzwiek ? "🔊" : "🔇"}</button>
+          <video ref={videoRef} poster={start?.json.media?.miniatura} src={film} autoPlay muted={!dzwiek} defaultMuted loop playsInline preload="auto" />
+          <button className="dzwiekVideo" onClick={przelaczDzwiek} aria-label={dzwiek ? "Wycisz film" : "Włącz dźwięk"}>{dzwiek ? "🔊" : "🔇"}</button>
           <div className="metryki szklo">
             <span><b>5+</b> Lat doświadczenia</span>
             <span><b>150+</b> Zrealizowanych flipów</span>
