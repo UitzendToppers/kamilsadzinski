@@ -34,6 +34,10 @@ function stronyZKreatora(sections = []) {
 
 function Nawigacja({ pages = [] }) {
   const [menuOtwarte, setMenuOtwarte] = useState(false);
+  useEffect(() => {
+    document.body.classList.toggle("menuMobileAktywne", menuOtwarte);
+    return () => document.body.classList.remove("menuMobileAktywne");
+  }, [menuOtwarte]);
   const linki = [
     ["/", "Strona Główna"],
     ["/#o-mnie", "O mnie"],
