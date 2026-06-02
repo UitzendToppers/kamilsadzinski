@@ -20,7 +20,10 @@ const port = Number(process.env.PORT || 4000);
 const secret = process.env.JWT_SECRET || "lokalny-sekret-do-zmiany";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const distPath = path.join(__dirname, "..", "dist");
+const dataPath = path.join(__dirname, "..", "data");
 const uploadPath = path.join(__dirname, "..", "public", "uploads");
+const courseOverridesPath = path.join(dataPath, "course-overrides.json");
+fs.mkdirSync(dataPath, { recursive: true });
 fs.mkdirSync(uploadPath, { recursive: true });
 const upload = multer({
   storage: multer.diskStorage({
@@ -155,6 +158,33 @@ const demoSettings = [
   { key: "stripe_webhook_secret", value: "", secret: true }
 ];
 
+function readJsonFile(filePath, fallback) {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  } catch {
+    return fallback;
+  }
+}
+
+function writeJsonFile(filePath, data) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+}
+
+function getDemoCourses() {
+  const overrides = readJsonFile(courseOverridesPath, {});
+  return demoCourses.map((course) => ({ ...course, ...(overrides[course.id] || {}) }));
+}
+
+function saveDemoCourse(id, data) {
+  const overrides = readJsonFile(courseOverridesPath, {});
+  const current = getDemoCourses().find((course) => course.id === id) || { id };
+  const saved = { ...current, ...data, id };
+  overrides[id] = saved;
+  writeJsonFile(courseOverridesPath, overrides);
+  return saved;
+}
+
 app.get("/api/health", (_req, res) => res.json({ status: "działa" }));
 
 app.post("/api/track", async (req, res) => {
@@ -204,7 +234,7 @@ app.get("/api/site", async (_req, res) => {
     ]);
     res.json({ sections, courses });
   } catch {
-    res.json({ sections: demoSections, courses: demoCourses });
+    res.json({ sections: demoSections, courses: getDemoCourses() });
   }
 });
 
@@ -222,7 +252,7 @@ app.get("/api/courses", async (_req, res) => {
     const courses = await prisma.course.findMany({ where: { published: true }, orderBy: { sortOrder: "asc" }, include: { lessons: true } });
     res.json(courses);
   } catch {
-    res.json(demoCourses);
+    res.json(getDemoCourses());
   }
 });
 
@@ -232,7 +262,7 @@ app.get("/api/courses/:slug", async (req, res) => {
     if (!course) return res.status(404).json({ error: "Nie znaleziono kursu." });
     res.json(course);
   } catch {
-    const course = demoCourses.find((item) => item.slug === req.params.slug);
+    const course = getDemoCourses().find((item) => item.slug === req.params.slug);
     if (!course) return res.status(404).json({ error: "Nie znaleziono kursu." });
     res.json(course);
   }
@@ -377,7 +407,7 @@ app.get("/api/admin/dashboard", auth, admin, async (_req, res) => {
       recentOrders
     });
   } catch {
-    res.json({ users: demoUsers.length, orders: demoOrders.length, courses: demoCourses.length, submissions: demoSubmissions.length, bookings: demoBookings.length, liveViews: 18, todayViews: 126, conversionRate: 4.8, revenueCents: 49700, recentOrders: demoOrders });
+    res.json({ users: demoUsers.length, orders: demoOrders.length, courses: getDemoCourses().length, submissions: demoSubmissions.length, bookings: demoBookings.length, liveViews: 18, todayViews: 126, conversionRate: 4.8, revenueCents: 49700, recentOrders: demoOrders });
   }
 });
 
@@ -385,7 +415,7 @@ app.get("/api/admin/courses", auth, admin, async (_req, res) => {
   try {
     res.json(await prisma.course.findMany({ orderBy: { sortOrder: "asc" }, include: { lessons: { orderBy: { sortOrder: "asc" } } } }));
   } catch {
-    res.json(demoCourses);
+    res.json(getDemoCourses());
   }
 });
 
@@ -399,7 +429,7 @@ app.put("/api/admin/courses/:id", auth, admin, async (req, res) => {
   try {
     res.json(await prisma.course.update({ where: { id: req.params.id }, data }));
   } catch {
-    res.json({ id: req.params.id, ...data });
+    res.json(saveDemoCourse(req.params.id, data));
   }
 });
 
