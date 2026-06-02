@@ -267,7 +267,6 @@ function KontaktPage({ dane }) {
         <div>
           <p className="etykieta">dojazd</p>
           <h2>Łódź, Narutowicza 40/1</h2>
-          <p>Mapa dojazdu do firmy Kamila. Pinezka wskazuje adres kontaktowy widoczny na stronie.</p>
         </div>
         <iframe
           title="Mapa dojazdu - Kamil Sadziński"
