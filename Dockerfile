@@ -18,4 +18,4 @@ COPY --from=build /app/server ./server
 COPY --from=build /app/prisma ./prisma
 RUN npx prisma generate
 EXPOSE 4000
-CMD ["sh", "-c", "node prisma/init-sqlite.js && node prisma/seed.js && node server/index.js"]
+CMD ["node", "server/bootstrap.js"]
