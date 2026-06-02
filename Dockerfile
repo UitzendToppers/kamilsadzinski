@@ -17,6 +17,7 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/server ./server
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/start.sh ./start.sh
+RUN sed -i 's/\r$//' ./start.sh
 RUN npx prisma generate
 EXPOSE 4000
 CMD ["sh", "start.sh"]
