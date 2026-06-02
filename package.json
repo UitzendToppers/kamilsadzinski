@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "concurrently \"vite --host 0.0.0.0\" \"node --watch server/index.js\"",
     "build": "vite build",
-    "start": "node server/bootstrap.js",
+    "start": "node server/index.js",
     "seed": "node prisma/seed.js",
     "migrate": "node prisma/init-sqlite.js",
     "deploy:migrate": "prisma migrate deploy",
