@@ -9,6 +9,16 @@ const statusy = [
   ["CANCELED", "Do odzyskania"],
   ["REFUNDED", "Zwroty"]
 ];
+const staleMedia = {
+  portret: "https://kamilsadzinski.pl/wp-content/uploads/2026/03/cropped-IMG_0420-1-scaled-1.jpg",
+  film: "https://kamilsadzinski.pl/wp-content/uploads/2026/03/strona.mp4",
+  miniatura: "https://kamilsadzinski.pl/wp-content/uploads/2026/03/Hero-Video-Thumbnail.jpg",
+  kursy: [
+    "https://kamilsadzinski.pl/wp-content/uploads/2026/03/pexels-photo-27759898-27759898-2048x1365.jpg",
+    "https://kamilsadzinski.pl/wp-content/uploads/2026/03/pexels-photo-3678466-3678466-2048x1521.jpg",
+    "https://kamilsadzinski.pl/wp-content/uploads/2026/03/g2760fff4c137dd5bd7d0dfe57846914d3c2953d3f2c8a0e305de497358461f8f8defb1cd202527b6acb43e8599e016a317d85945196745d27b2fb0d860e72d71_1280-1845166.jpg"
+  ]
+};
 
 function pieniadze(grosze = 0) {
   return new Intl.NumberFormat("pl-PL", { style: "currency", currency: "PLN", maximumFractionDigits: 0 }).format(grosze / 100);
@@ -83,7 +93,8 @@ function Strona({ dane, setWidok, setWybrany }) {
   const omnie = sekcje["o-mnie"];
   const kontakt = sekcje.kontakt;
   const kreator = sekcje["kreator-strony"];
-  const film = start?.json.media?.film;
+  const media = { ...staleMedia, ...(start?.json?.media || {}) };
+  const film = media.film;
 
   useEffect(() => {
     if (!videoRef.current || !film) return;
@@ -113,7 +124,7 @@ function Strona({ dane, setWidok, setWybrany }) {
           </div>
         </div>
         <div className="heroMedia">
-          <video ref={videoRef} poster={start?.json.media?.miniatura} src={film} autoPlay muted={!dzwiek} defaultMuted loop playsInline preload="auto" />
+          <video ref={videoRef} poster={media.miniatura} src={film} autoPlay muted={!dzwiek} defaultMuted loop playsInline preload="auto" />
           <button className="dzwiekVideo" onClick={przelaczDzwiek} aria-label={dzwiek ? "Wycisz film" : "Włącz dźwięk"}>{dzwiek ? "🔊" : "🔇"}</button>
           <div className="metryki szklo">
             <span><b>5+</b> Lat doświadczenia</span>
@@ -129,7 +140,7 @@ function Strona({ dane, setWidok, setWybrany }) {
           <h2>{omnie?.title}</h2>
           {omnie?.content.split("\n\n").map((akapit) => <p key={akapit}>{akapit}</p>)}
         </div>
-        <img className="zdjeciePremium" src={start?.json.media?.portret} alt="Kamil Sadziński" loading="lazy" />
+        <img className="zdjeciePremium" src={media.portret} alt="Kamil Sadziński" loading="lazy" />
       </section>
 
       <section className="siatkaInfo">
@@ -152,9 +163,9 @@ function Strona({ dane, setWidok, setWybrany }) {
           <h2>Wybierz swoją ścieżkę</h2>
         </div>
         <div className="listaKursow">
-          {dane.courses?.map((kurs, index) => (
-            <article className="kurs wejscie" style={{ animationDelay: `${index * 120}ms` }} key={kurs.id}>
-              <img src={kurs.imageUrl} alt={kurs.title} loading="lazy" />
+            {dane.courses?.map((kurs, index) => (
+              <article className="kurs wejscie" style={{ animationDelay: `${index * 120}ms` }} key={kurs.id}>
+                <img src={kurs.imageUrl || staleMedia.kursy[index % staleMedia.kursy.length]} alt={kurs.title} loading="lazy" />
               <div className="kursTresc">
                 <span>{kurs.badge}</span>
                 <h3>{kurs.title}</h3>
@@ -215,6 +226,7 @@ function DynamicPage({ page }) {
 }
 
 function Kurs({ kurs, setWidok }) {
+  const obraz = kurs.imageUrl || staleMedia.kursy[0];
   const [formularz, setFormularz] = useState({ name: "", email: "", phone: "", startsAt: "" });
   const [sloty, setSloty] = useState([]);
   const [komunikat, setKomunikat] = useState("");
@@ -233,7 +245,7 @@ function Kurs({ kurs, setWidok }) {
     <main className="widokKursu">
       <button className="linkowy" onClick={() => setWidok("start")}>Wróć do strony</button>
       <section className="detal wejscie">
-        <img src={kurs.imageUrl} alt={kurs.title} />
+        <img src={obraz} alt={kurs.title} />
         <div>
           <span className="etykieta">{kurs.badge}</span>
           <h1>{kurs.title}</h1>
@@ -265,6 +277,7 @@ function KontaktPage({ dane }) {
   const sekcje = Object.fromEntries((dane.sections || []).map((s) => [s.key, { ...s, json: JSON.parse(s.data || "{}") }]));
   const kontakt = sekcje.kontakt;
   const start = sekcje["strona-glowna"];
+  const media = { ...staleMedia, ...(start?.json?.media || {}) };
   const [formularz, setFormularz] = useState({ name: "", email: "", phone: "", topic: "Konsultacja nieruchomości", message: "" });
   const [komunikat, setKomunikat] = useState("");
 
@@ -287,7 +300,7 @@ function KontaktPage({ dane }) {
             <p>{kontakt?.content}</p>
           </div>
         </div>
-        <img src={start?.json?.media?.portret} alt="Kamil Sadziński" />
+        <img src={media.portret} alt="Kamil Sadziński" />
       </section>
 
       <section className="kontaktFormularzSekcja">
@@ -505,7 +518,7 @@ function KursyAdmin({ kursy, zapiszKurs, wgrajObraz, setPrzeciagany, upusc }) {
           const edycja = wersje[kurs.id] || kurs;
           return (
           <article draggable onDragStart={() => setPrzeciagany(kurs.id)} onDragOver={(e) => e.preventDefault()} onDrop={() => upusc(kurs.id)} key={kurs.id}>
-            <img src={edycja.imageUrl} alt={edycja.title} />
+            <img src={edycja.imageUrl || staleMedia.kursy[index % staleMedia.kursy.length]} alt={edycja.title} />
             <div className="formularzAdmin">
               <label>Nazwa kursu<input value={edycja.title} onChange={(e) => zmien(kurs.id, "title", e.target.value)} /></label>
               <label>Opis skrócony<textarea value={edycja.summary} onChange={(e) => zmien(kurs.id, "summary", e.target.value)} /></label>
