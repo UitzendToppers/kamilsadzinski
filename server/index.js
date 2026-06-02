@@ -76,7 +76,7 @@ const courseSchema = z.object({
   duration: z.string().optional().nullable(),
   level: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
-  published: z.boolean().optional()
+  published: z.boolean().optional().nullable()
 });
 
 function sign(user) {
