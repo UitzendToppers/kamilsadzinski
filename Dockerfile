@@ -16,6 +16,6 @@ RUN npm ci --omit=dev
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/server ./server
 COPY --from=build /app/prisma ./prisma
-COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
+RUN npx prisma generate
 EXPOSE 4000
 CMD ["sh", "-c", "node prisma/init-sqlite.js && node prisma/seed.js && node server/index.js"]

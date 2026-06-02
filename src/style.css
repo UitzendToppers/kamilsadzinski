@@ -450,13 +450,6 @@ textarea { min-height: 132px; }
 .podmenu .aktywny, .pasekKreatora .aktywny { background: var(--zloto); color: #111; }
 .ustawieniaGrid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(320px, .6fr); gap: 22px; align-items: start; }
 .sklepBok { display: grid; gap: 18px; }
-.paymentPreview { padding: 18px; background: rgba(255,250,241,.9); border: 1px solid rgba(23,32,51,.16); box-shadow: var(--cien); }
-.paymentPreview h2 { font-size: 26px; margin-bottom: 14px; }
-.payBox { display: grid; gap: 10px; padding: 16px; background: #fff; border: 1px solid rgba(23,32,51,.14); }
-.payTotal { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid rgba(23,32,51,.14); }
-.payTotal b { font-size: 30px; color: var(--miedz); }
-.payBox button { display: flex; justify-content: space-between; align-items: center; gap: 12px; border: 1px solid rgba(23,32,51,.14); background: #fffaf1; padding: 14px; font-weight: 900; }
-.payBox small { color: #667085; }
 .kalendarzAdmin, .integracjeAdmin { display: grid; gap: 20px; }
 .instrukcja { padding: 24px; background: rgba(255,250,241,.9); }
 .instrukcja h1 { margin-top: 0; }

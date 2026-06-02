@@ -547,7 +547,6 @@ function UstawieniaPanel({ dane, strony, setStrony, zapiszKurs, wgrajObraz, setP
             <KursyAdmin kursy={dane.courses || []} zapiszKurs={zapiszKurs} wgrajObraz={wgrajObraz} setPrzeciagany={setPrzeciagany} upusc={upusc} />
           </section>
           <aside className="sklepBok">
-            <PaymentPreview />
             <section className="ostatnieTransakcje">
               <h2>Ostatnie transakcje</h2>
               {(dane.dashboard?.recentOrders || []).map((order) => <article key={order.id}><strong>{order.number}</strong><span>{order.email}</span><b>{pieniadze(order.totalCents)}</b><small>{order.status}</small></article>)}
@@ -596,20 +595,6 @@ function BazaDanychAdmin() {
         {komunikat && <p className="komunikat">{komunikat}</p>}
       </section>
     </div>
-  );
-}
-
-function PaymentPreview() {
-  return (
-    <section className="paymentPreview">
-      <h2>Podgląd płatności live</h2>
-      <div className="payBox">
-        <div className="payTotal"><span>Do zapłaty</span><b>497 zł</b></div>
-        {["BLIK", "Karta", "Apple Pay", "Google Pay", "PayPal"].map((method) => (
-          <button key={method}><span>{method}</span><small>{method === "BLIK" ? "Kod 6-cyfrowy" : "Płatność natychmiastowa"}</small></button>
-        ))}
-      </div>
-    </section>
   );
 }
 
