@@ -45,6 +45,88 @@ nav { display: flex; gap: clamp(12px, 2vw, 28px); align-items: center; flex-wrap
 nav a { font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; position: relative; }
 nav a::after { content: ""; position: absolute; left: 0; bottom: -7px; width: 0; height: 2px; background: var(--zloto); transition: width .25s ease; }
 nav a:hover::after { width: 100%; }
+.menuMobileButton {
+  display: none;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(23,32,51,.18);
+  background: rgba(255,250,241,.86);
+  place-items: center;
+  padding: 12px;
+  gap: 5px;
+}
+.menuMobileButton span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--granat);
+}
+.drawerMobile {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 22px;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(200,157,85,.26), transparent 34%),
+    linear-gradient(135deg, #fffaf1, #eadcc4 62%, #c89d55);
+  color: var(--granat);
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .38s cubic-bezier(.2,.8,.2,1), opacity .25s ease;
+}
+.drawerMobile.otwarty {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.drawerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.drawerTop img { width: 148px; }
+.drawerTop button {
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(23,32,51,.2);
+  background: rgba(255,255,255,.45);
+  color: var(--granat);
+  font-size: 38px;
+  line-height: 1;
+}
+.drawerLinki {
+  display: grid;
+  align-content: center;
+  gap: 10px;
+}
+.drawerLinki a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(23,32,51,.16);
+  font-size: clamp(34px, 10vw, 64px);
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: 0;
+  animation: drawerLink .42s cubic-bezier(.2,.8,.2,1) both;
+}
+.drawerLinki a::after {
+  content: "→";
+  color: var(--miedz);
+  font-size: .68em;
+}
+.drawerStopka {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(23,32,51,.16);
+  font-weight: 900;
+}
 
 .przycisk {
   border: 1px solid var(--granat);
@@ -614,6 +696,7 @@ textarea { min-height: 132px; }
 
 .wejscie { animation: wejscie .72s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes wejscie { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes drawerLink { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 1050px) {
   .hero, .pas, .detal, .panel { grid-template-columns: 1fr; }
@@ -633,9 +716,10 @@ textarea { min-height: 132px; }
 }
 
 @media (max-width: 680px) {
-  .nawigacja { align-items: flex-start; gap: 14px; flex-direction: column; }
+  .nawigacja { align-items: center; gap: 14px; flex-direction: row; }
   .logo img { width: 128px; }
-  nav { gap: 10px; }
+  nav { display: none; }
+  .menuMobileButton { display: grid; margin-left: auto; }
   nav a { font-size: 12px; }
   .hero { min-height: auto; }
   .hero h1 { font-size: 44px; }

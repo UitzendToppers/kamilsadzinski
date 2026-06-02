@@ -33,18 +33,40 @@ function stronyZKreatora(sections = []) {
 }
 
 function Nawigacja({ pages = [] }) {
+  const [menuOtwarte, setMenuOtwarte] = useState(false);
+  const linki = [
+    ["/", "Strona Główna"],
+    ["/#o-mnie", "O mnie"],
+    ["/#szkolenia", "Szkolenia"],
+    ["/kontakt", "Kontakt"],
+    ...pages.map((page) => [`/${page.json.slug}`, page.json.navLabel || page.title])
+  ];
   return (
     <header className="nawigacja">
       <a className="logo" href="/">
         <img src="/logokamil.png" alt="Kamil Sadziński" />
       </a>
       <nav>
-        <a href="/">Strona Główna</a>
-        <a href="/#o-mnie">O mnie</a>
-        <a href="/#szkolenia">Szkolenia</a>
-        <a href="/kontakt">Kontakt</a>
-        {pages.map((page) => <a href={`/${page.json.slug}`} key={page.id}>{page.json.navLabel || page.title}</a>)}
+        {linki.map(([href, label]) => <a href={href} key={href}>{label}</a>)}
       </nav>
+      <button className="menuMobileButton" onClick={() => setMenuOtwarte(true)} aria-label="Otwórz menu">
+        <span />
+        <span />
+        <span />
+      </button>
+      <div className={`drawerMobile ${menuOtwarte ? "otwarty" : ""}`}>
+        <div className="drawerTop">
+          <img src="/logokamil.png" alt="Kamil Sadziński" />
+          <button onClick={() => setMenuOtwarte(false)} aria-label="Zamknij menu">×</button>
+        </div>
+        <div className="drawerLinki">
+          {linki.map(([href, label], index) => <a href={href} onClick={() => setMenuOtwarte(false)} style={{ animationDelay: `${index * 55}ms` }} key={href}>{label}</a>)}
+        </div>
+        <div className="drawerStopka">
+          <span>Inwestowanie w nieruchomości</span>
+          <strong>Kamil Sadziński</strong>
+        </div>
+      </div>
     </header>
   );
 }
