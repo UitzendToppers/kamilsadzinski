@@ -490,6 +490,11 @@ app.put("/api/admin/database-config", auth, admin, async (req, res) => {
   res.json({ ok: true, message: "Zapisano konfigurację. Tabele zostaną utworzone komendą npm run migrate lub automatycznie przy starcie kontenera." });
 });
 
+app.use("/api", (error, _req, res, _next) => {
+  console.error(error);
+  res.status(500).json({ error: error.message || "Błąd serwera." });
+});
+
 app.use("/uploads", express.static(uploadPath, { maxAge: "30d" }));
 app.use(express.static(path.join(__dirname, "..", "public"), { maxAge: "30d", index: false }));
 app.use(express.static(distPath, { maxAge: "1y", index: false }));
