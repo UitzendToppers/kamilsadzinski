@@ -1,0 +1,204 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  name         String
+  phone        String?
+  role         String     @default("CUSTOMER")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  purchases    Purchase[]
+  orders       Order[]
+  notes        CrmNote[]
+}
+
+model Course {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  title       String
+  badge       String?
+  summary     String
+  description String
+  priceCents  Int
+  currency    String      @default("PLN")
+  duration    String?
+  level       String?
+  imageUrl    String?
+  sortOrder   Int         @default(0)
+  published   Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  lessons     Lesson[]
+  purchases   Purchase[]
+  orderItems  OrderItem[]
+  bookings    Booking[]
+}
+
+model Lesson {
+  id        String   @id @default(cuid())
+  courseId  String
+  title     String
+  content   String
+  videoUrl  String?
+  sortOrder Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+model Purchase {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  number         String      @unique
+  userId         String?
+  bookingId      String?
+  email          String
+  name           String
+  totalCents     Int
+  currency       String      @default("PLN")
+  status         String   @default("DRAFT")
+  stripeIntentId String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  user           User?       @relation(fields: [userId], references: [id])
+  booking        Booking?    @relation(fields: [bookingId], references: [id])
+  items          OrderItem[]
+  payments       Payment[]
+}
+
+model OrderItem {
+  id         String @id @default(cuid())
+  orderId    String
+  courseId   String
+  title      String
+  priceCents Int
+  order      Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  course     Course @relation(fields: [courseId], references: [id])
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  orderId     String
+  provider    String        @default("stripe")
+  providerId  String?
+  amountCents Int
+  currency    String        @default("PLN")
+  status      String   @default("PENDING")
+  payload     String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  order       Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model SiteSection {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  title     String
+  content   String
+  data      String
+  updatedAt DateTime @updatedAt
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  secret    Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  topic     String
+  message   String
+  source    String   @default("formularz kontaktowy")
+  status    String   @default("NEW")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Booking {
+  id        String   @id @default(cuid())
+  courseId  String
+  name      String
+  email     String
+  phone     String?
+  startsAt  DateTime
+  endsAt    DateTime
+  status    String   @default("PENDING")
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  orders    Order[]
+}
+
+model AvailabilityBlock {
+  id        String   @id @default(cuid())
+  startsAt  DateTime
+  endsAt    DateTime
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model IntegrationAccount {
+  id        String   @id @default(cuid())
+  type      String
+  label     String
+  email     String?
+  provider  String
+  config    String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CrmStage {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  name      String
+  sortOrder Int      @default(0)
+  color     String   @default("#2f6d50")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  referrer  String?
+  userAgent String?
+  ip        String?
+  createdAt DateTime @default(now())
+}
+
+model CrmNote {
+  id        String   @id @default(cuid())
+  userId    String
+  text      String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

@@ -1,0 +1,15 @@
+services:
+  platforma:
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: "file:/app/data/prod.db"
+      PORT: "4000"
+      JWT_SECRET: "zmien-to-na-dlugi-losowy-sekret"
+      PUBLIC_URL: "https://twoja-domena.pl"
+    volumes:
+      - dane:/app/data
+
+volumes:
+  dane:

@@ -1,0 +1,52 @@
+{
+  "name": "kamil-sadzinski-platforma",
+  "version": "1.0.0",
+  "description": "Platforma kursowa, sklep, panel administracyjny i CRM.",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"vite --host 0.0.0.0\" \"node --watch server/index.js\"",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "seed": "node prisma/seed.js",
+    "migrate": "node prisma/init-sqlite.js",
+    "deploy:migrate": "prisma migrate deploy",
+    "prisma:generate": "prisma generate",
+    "test": "node server/test.js"
+  },
+  "keywords": [
+    "kursy",
+    "crm",
+    "stripe",
+    "nieruchomosci"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^3.0.2",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "grapesjs": "^0.23.2",
+    "grapesjs-blocks-basic": "^1.0.2",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
+    "prisma": "^5.22.0",
+    "sqlite3": "^6.0.1",
+    "stripe": "^19.2.0",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.4",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.36.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.7"
+  }
+}
