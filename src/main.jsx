@@ -50,6 +50,7 @@ function Nawigacja({ pages = [] }) {
 }
 
 function Strona({ dane, setWidok, setWybrany }) {
+  const [dzwiek, setDzwiek] = useState(true);
   const sekcje = Object.fromEntries((dane.sections || []).map((s) => [s.key, { ...s, json: JSON.parse(s.data || "{}") }]));
   const start = sekcje["strona-glowna"];
   const omnie = sekcje["o-mnie"];
@@ -68,7 +69,8 @@ function Strona({ dane, setWidok, setWybrany }) {
           </div>
         </div>
         <div className="heroMedia">
-          <video poster={start?.json.media?.miniatura} src={start?.json.media?.film} autoPlay muted loop playsInline />
+          <video poster={start?.json.media?.miniatura} src={start?.json.media?.film} autoPlay muted={!dzwiek} loop playsInline />
+          <button className="dzwiekVideo" onClick={() => setDzwiek(!dzwiek)} aria-label={dzwiek ? "Wycisz film" : "Włącz dźwięk"}>{dzwiek ? "🔊" : "🔇"}</button>
           <div className="metryki szklo">
             <span><b>5+</b> Lat doświadczenia</span>
             <span><b>150+</b> Zrealizowanych flipów</span>
