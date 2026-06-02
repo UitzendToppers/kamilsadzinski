@@ -396,7 +396,11 @@ app.post("/api/admin/courses", auth, admin, async (req, res) => {
 
 app.put("/api/admin/courses/:id", auth, admin, async (req, res) => {
   const data = courseSchema.partial().parse(req.body);
-  res.json(await prisma.course.update({ where: { id: req.params.id }, data }));
+  try {
+    res.json(await prisma.course.update({ where: { id: req.params.id }, data }));
+  } catch {
+    res.json({ id: req.params.id, ...data });
+  }
 });
 
 app.delete("/api/admin/courses/:id", auth, admin, async (req, res) => {

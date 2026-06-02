@@ -509,6 +509,7 @@ textarea { min-height: 132px; }
 .formularzAdmin label, .platnosci label { display: grid; gap: 8px; font-weight: 900; }
 .formularzAdmin textarea { grid-column: span 2; }
 .plik input { background: #fff; }
+.zapiszKursButton { grid-column: 1 / -1; justify-self: start; }
 
 .paginacja { display: flex; align-items: center; justify-content: flex-end; gap: 14px; margin-top: 18px; font-weight: 900; }
 .paginacja button:disabled { opacity: .4; cursor: not-allowed; }

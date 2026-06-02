@@ -371,15 +371,18 @@ function Panel() {
   useEffect(() => { pobierz(); }, [token, strony.klienci, strony.zamowienia, strony.formularze, strony.bookingi]);
 
   async function zapiszKurs(kurs) {
-    await api(`/admin/courses/${kurs.id}`, { method: "PUT", body: JSON.stringify(kurs) });
-    pobierz();
+    const zapisany = await api(`/admin/courses/${kurs.id}`, { method: "PUT", body: JSON.stringify(kurs) });
+    setDane((aktualne) => ({
+      ...aktualne,
+      courses: (aktualne.courses || []).map((item) => (item.id === kurs.id ? { ...item, ...zapisany } : item))
+    }));
   }
 
   async function wgrajObraz(kurs, plik) {
     const body = new FormData();
     body.append("plik", plik);
     const wynik = await api("/admin/uploads", { method: "POST", body });
-    await zapiszKurs({ ...kurs, imageUrl: wynik.url });
+    return wynik.url;
   }
 
   async function upusc(id) {
@@ -479,22 +482,41 @@ function Dashboard({ dane = {} }) {
 }
 
 function KursyAdmin({ kursy, zapiszKurs, wgrajObraz, setPrzeciagany, upusc }) {
+  const [wersje, setWersje] = useState({});
+
+  useEffect(() => {
+    setWersje(Object.fromEntries(kursy.map((kurs) => [kurs.id, { ...kurs }])));
+  }, [kursy]);
+
+  function zmien(id, pole, wartosc) {
+    setWersje((aktualne) => ({ ...aktualne, [id]: { ...(aktualne[id] || {}), [pole]: wartosc } }));
+  }
+
+  async function wgraj(kurs, plik) {
+    const url = await wgrajObraz(kurs, plik);
+    zmien(kurs.id, "imageUrl", url);
+  }
+
   return (
     <div>
       <h1>Kursy i oferta</h1>
       <div className="kursyAdmin">
-        {kursy.map((kurs) => (
+        {kursy.map((kurs) => {
+          const edycja = wersje[kurs.id] || kurs;
+          return (
           <article draggable onDragStart={() => setPrzeciagany(kurs.id)} onDragOver={(e) => e.preventDefault()} onDrop={() => upusc(kurs.id)} key={kurs.id}>
-            <img src={kurs.imageUrl} alt={kurs.title} />
+            <img src={edycja.imageUrl} alt={edycja.title} />
             <div className="formularzAdmin">
-              <label>Nazwa kursu<input value={kurs.title} onChange={(e) => zapiszKurs({ ...kurs, title: e.target.value })} /></label>
-              <label>Opis skrócony<textarea value={kurs.summary} onChange={(e) => zapiszKurs({ ...kurs, summary: e.target.value })} /></label>
-              <label>Cena w groszach<input type="number" value={kurs.priceCents} onChange={(e) => zapiszKurs({ ...kurs, priceCents: Number(e.target.value) })} /></label>
-              <label>Adres obrazu<input value={kurs.imageUrl || ""} onChange={(e) => zapiszKurs({ ...kurs, imageUrl: e.target.value })} /></label>
-              <label className="plik">Wgraj obraz z komputera<input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && wgrajObraz(kurs, e.target.files[0])} /></label>
+              <label>Nazwa kursu<input value={edycja.title} onChange={(e) => zmien(kurs.id, "title", e.target.value)} /></label>
+              <label>Opis skrócony<textarea value={edycja.summary} onChange={(e) => zmien(kurs.id, "summary", e.target.value)} /></label>
+              <label>Cena w groszach<input type="number" value={edycja.priceCents} onChange={(e) => zmien(kurs.id, "priceCents", Number(e.target.value))} /></label>
+              <label>Adres obrazu<input value={edycja.imageUrl || ""} onChange={(e) => zmien(kurs.id, "imageUrl", e.target.value)} /></label>
+              <label className="plik">Wgraj obraz z komputera<input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && wgraj(kurs, e.target.files[0])} /></label>
+              <button className="przycisk zapiszKursButton" onClick={() => zapiszKurs(edycja)}>Zapisz kurs</button>
             </div>
           </article>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
