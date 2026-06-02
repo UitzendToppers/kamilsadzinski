@@ -262,6 +262,34 @@ function KontaktPage({ dane }) {
           {komunikat && <p className="komunikat">{komunikat}</p>}
         </form>
       </section>
+
+      <section className="mapaKontakt">
+        <div>
+          <p className="etykieta">dojazd</p>
+          <h2>Łódź, Narutowicza 40/1</h2>
+          <p>Mapa dojazdu do firmy Kamila. Pinezka wskazuje adres kontaktowy widoczny na stronie.</p>
+        </div>
+        <iframe
+          title="Mapa dojazdu - Kamil Sadziński"
+          loading="lazy"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=19.4524%2C51.7685%2C19.4624%2C51.7735&layer=mapnik&marker=51.77098%2C19.4576"
+        />
+      </section>
+
+      <footer id="kontakt">
+        <div className="stopkaWnetrze">
+          <img src="/logokamil.png" alt="Kamil Sadziński" />
+          <div>
+            <h2>Zacznij budować swoją przyszłość już dziś</h2>
+            <p>Nie czekaj na "idealny moment". Rynek nieruchomości ucieka. Dołącz do grona inwestorów i zrealizuj swój pierwszy zyskowny projekt w tym roku.</p>
+          </div>
+          <div className="kontaktStopka">
+            <strong>{kontakt?.title}</strong>
+            <p>{kontakt?.content}</p>
+          </div>
+        </div>
+        <div className="dolStopki">© 2026 Kamil Sadziński. Wszelkie prawa zastrzeżone.</div>
+      </footer>
     </main>
   );
 }
